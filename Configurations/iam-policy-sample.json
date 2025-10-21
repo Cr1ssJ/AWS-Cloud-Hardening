@@ -1,1 +1,23 @@
-aqui van los IAM policies
+ZT-Restricted-S3-Access
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowReadAccessToSpecificBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::zt-secure-bucket",
+        "arn:aws:s3:::zt-secure-bucket/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    }
+  ]
+}
