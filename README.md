@@ -8,20 +8,33 @@ Este proyecto demuestra cómo aplicar controles de acceso estrictos, segmentaci�
 
 ## 🧩 Arquitectura general
 [Usuario / Administrador]
+
 │
+
 ▼
 [IAM + MFA (PAP & PDP)]
+
 │
+
 ▼
+
 [VPC]
 ├── Subred Pública → EC2 Bastion (PEP - punto de control)
+
 └── Subred Privada → RDS (base de datos cifrada, acceso solo interno)
+
 │
+
 ▼
+
 [S3 (privado y cifrado con KMS)]
+
 │
+
 ▼
+
 [CloudTrail + CloudWatch + SNS (PIP y monitoreo continuo)]
+
 
 ## 🧱 Servicios utilizados
 
