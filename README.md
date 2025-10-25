@@ -1,7 +1,7 @@
 # 🛡️ AWS Cloud Hardening – Zero Trust Architecture
 
 **Autor:** Cristian Jiménez  
-**Carrera:** Licenciatura en Ciberseguridad – Universidad Tecnológica de Panamá  
+**Carrera:** Estudiante de la Licenciatura en Ciberseguridad – Universidad Tecnológica de Panamá  
 **Fecha:** Octubre 2025  
 
 ---
