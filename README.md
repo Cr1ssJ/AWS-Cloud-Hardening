@@ -7,7 +7,7 @@
 ---
 
 ## 🎯 Objetivo General
-Diseñar y desplegar un entorno AWS seguro basado en los principios de **Zero Trust Architecture (ZTA)**, conforme a las recomendaciones de **NIST SP 800-207**, aplicando buenas prácticas de endurecimiento de infraestructura, monitoreo continuo y respuesta ante incidentes.
+Diseñar y desplegar un entorno AWS seguro basado en los principios de Zero Trust Architecture (ZTA), conforme a las recomendaciones de NIST SP 800-207, aplicando buenas prácticas de endurecimiento de infraestructura, monitoreo continuo y respuesta ante incidentes.
 
 ---
 
@@ -26,7 +26,7 @@ Diseñar y desplegar un entorno AWS seguro basado en los principios de **Zero Tr
 
 ### ☁️ **Fase 2 – Almacenamiento Seguro (S3 Hardening)**
 - Creación del bucket `zt-cloudtrail-logs`.
-- Configuración de **versioning**, **encryption (AES-256)** y **bucket policy** restrictiva.
+- Configuración de versioning, encryption (AES-256) y bucket policy restrictiva.
 - Pruebas de acceso y validación de políticas.
 
 📁 **Configuraciones:**
@@ -38,10 +38,10 @@ Diseñar y desplegar un entorno AWS seguro basado en los principios de **Zero Tr
 ---
 
 ### 🖥️ **Fase 3 – Infraestructura Segura (VPC + EC2 + RDS)**
-- Creación de VPC Zero Trust `ZT-VPC`.
+- Creación de VPC `ZT-VPC`.
 - Subnets pública y privada con tablas de ruteo personalizadas.
-- Despliegue de **EC2 (Amazon Linux 2023)** y **RDS (MySQL)**.
-- Asociación de roles SSM (`AmazonSSMManagedInstanceCore`) para control sin SSH.
+- Despliegue de EC2 (Amazon Linux 2023) y RDS (MySQL).
+- Asociación de roles SSM (AmazonSSMManagedInstanceCore) para control sin SSH.
 - Pruebas de conexión y registro de logs.
 
 📁 **Evidencias:**
@@ -60,11 +60,9 @@ Capturas de `Log groups`, `RDS Logs`, `CloudWatch configuration`.
 ---
 
 ### 🔍 **Fase 5 – Monitoreo Continuo (CloudTrail + CloudWatch + SNS)**
-- Activación de **CloudTrail** para toda la cuenta.
-- Envío de logs a S3 (`zt-cloudtrail-logs`).
-- Creación de **metric filter** para detectar intentos de inicio fallido:
-  ```bash
-  { ($.eventName = "ConsoleLogin") && ($.errorMessage = "Failed authentication") }
+- Activación de CloudTrail para toda la cuenta.
+- Envío de logs a S3 (zt-cloudtrail-logs).
+- Creación de metric filter para detectar intentos de inicio fallido { ($.eventName = "ConsoleLogin") && ($.errorMessage = "Failed authentication") }
 - Configuración de alarma Security Alert vinculada a SNS Topic (security-alerts).
 - Prueba de simulación con credenciales erróneas.
 
@@ -78,7 +76,7 @@ Capturas sugeridas:
 ## 🔐 Fase 6 – Integración Zero Trust (PAP, PDP, PEP, PIP)
 
 ### 🎯 Objetivo
-Alinear la arquitectura a **NIST SP 800-207**, mapeando servicios AWS a los componentes del modelo Zero Trust.
+Alinear la arquitectura a NIST SP 800-207, mapeando servicios AWS a los componentes del modelo Zero Trust.
 
 | Componente | AWS Servicio              | Función                                   |
 |------------|---------------------------|-------------------------------------------|
