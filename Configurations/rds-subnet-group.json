@@ -1,0 +1,8 @@
+{
+  "DBSubnetGroupName": "ZT-DB-Subnet-Group",
+  "DBSubnetGroupDescription": "Private DB subnets for RDS Multi-AZ",
+  "SubnetIds": [
+    "subnet-xxxxxxxx",
+    "subnet-yyyyyyyy"
+  ]
+}
