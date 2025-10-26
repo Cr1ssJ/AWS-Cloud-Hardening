@@ -1,105 +1,53 @@
-# 🛡️ AWS Cloud Hardening – Zero Trust Architecture
+# Proyecto Zero Trust Architecture en AWS (Free Tier)
 
-**Autor:** Cristian Jiménez  
-**Ocupación:** Estudiante de la Licenciatura en Ciberseguridad en la Universidad Tecnológica de Panamá (UTP)  
-**Proyecto:** Implementación de arquitectura Zero Trust en AWS  
-**Fecha:** Octubre 2025  
+**Descripción del Proyecto**: El objetivo de este proyecto fue diseñar e implementar una arquitectura de seguridad de Zero Trust en AWS, empleando principalmente servicios dentro del nivel gratuito (Free Tier). La solución demuestra cómo aplicar controles de acceso estrictos, segmentación de red, cifrado de datos y monitoreo continuo sin depender de servicios premium (no se usaron, por ejemplo, GuardDuty ni Security Hub). De este modo, se crea un entorno en la nube seguro y trazable, alineado con las guías de Zero Trust del NIST SP 800-207, y se evidencia que es posible mejorar la postura de seguridad usando recursos estándar de AWS Free Tier.
 
----
+La arquitectura implementa un modelo Zero Trust con múltiples capas defensivas en AWS. Todos los accesos comienzan en un plano de identidad robusto: un AWS IAM Identity Center con MFA, que actúa como punto de administración y decisión de políticas (PAP/PDP) para autenticar y autorizar a cada usuario antes de permitirle el acceso. Los recursos en la nube se aíslan en una VPC con subredes separadas: una subred pública que aloja un Bastion Host (servidor de salto seguro como Policy Enforcement Point, PEP) y una subred privada donde reside la base de datos (Amazon RDS) sin exposición pública. Los datos sensibles se almacenan cifrados (por ejemplo, objetos en Amazon S3 protegidos con claves de AWS KMS) y se aplican políticas que requieren conexiones seguras (HTTPS) y cifrado de datos para cualquier acceso. Además, se habilitó un monitoreo contínuo de la actividad mediante AWS CloudTrail y Amazon CloudWatch, complementado con notificaciones automáticas vía Amazon SNS, logrando visibilidad total de eventos de seguridad y respuesta inmediata ante incidentes. En conjunto, la arquitectura resultante integra la administración de políticas (IAM Identity Center, IAM y KMS), el monitoreo permanente (CloudWatch, CloudTrail) y mecanismos de alerta (SNS), cumpliendo los lineamientos del marco NIST SP 800-207.
 
-## 📘 Resumen General
+## Fases del proyecto
+- **Fase 0: Configuración Inicial de Identidades Seguras**
+- **Fase 1: Auditoría de Identidades y Control de Acceso con Mínimo
+Privilegio (IAM)**
+- **Fase 2: Protección de Datos en Almacenamiento (Bucket S3 Seguro con
+Cifrado)**
+- **Fase 3: Segmentación de Red (VPC Privada, Subredes y Security Groups)**
+- **Fase 4: Implementación de Bastion Host Seguro y Acceso a Base de
+Datos Privada**
+- **Fase 5: Monitoreo Continuo y Alertas Automatizadas (CloudTrail,
+CloudWatch, SNS)**
 
-Este proyecto implementa los principios de **Zero Trust Architecture (ZTA)** en un entorno AWS, siguiendo las recomendaciones del **NIST SP 800-207** y las mejores prácticas de seguridad en la nube.  
-El objetivo es reforzar la **seguridad por capas**, **minimizar la confianza implícita**, y **proteger datos, identidades y redes** bajo un modelo de autenticación y autorización continua.
+## Servicios AWS Utilizados
 
----
+- **AWS IAM Identity Center (AWS SSO)**
+- **AWS Identity and Access Management (IAM)**
+- **AWS Key Management Service (KMS)**
+- **Amazon Virtual Private Cloud (VPC)**
+- **Amazon Elastic Compute Cloud (EC2)**
+- **AWS Systems Manager (Session Manager)**
+- **Amazon Relational Database Service (RDS)**
+- **Amazon Simple Storage Service (S3)**
+- **AWS CloudTrail**
+- **Amazon CloudWatch**
+- **Amazon Simple Notification Service (SNS)**
 
-## 🧩 Fase 0 – Fundamentos de Zero Trust
+## Evidencias dentro de este Repositorio
 
-> _“Zero Trust no es un producto, es una filosofía de seguridad.”_ – John Kindervag  
+- Capturas de configuración
+- Políticas y scripts
+- Pruebas de seguridad
+- Informe técnico
 
-Zero Trust se basa en tres principios:
-- **Nunca confiar, siempre verificar.**  
-- **Aplicar privilegio mínimo.**  
-- **Monitorear y validar continuamente.**
+## Requisitos para Replicar el Proyecto
 
-**Conceptos Clave:**
-- La red siempre se considera hostil.  
-- No existe confianza implícita (interna o externa).  
-- Toda solicitud pasa por un **PDP (Policy Decision Point)** y un **PEP (Policy Enforcement Point)**.  
-- Las decisiones de acceso se basan en identidad, dispositivo, comportamiento y contexto.  
+Cuenta de AWS Free Tier: Una cuenta de AWS con elegibilidad para el nivel gratuito. Es recomendable usar la región us-east-1 (N. Virginia) u otra región donde los servicios mencionados estén disponibles dentro de Free Tier. Asegúrese de que la cuenta esté configurada con las credenciales adecuadas y sin usos previos que consuman los límites gratuitos necesarios (por ejemplo, horas de EC2/RDS disponibles).
 
----
+- **MFA y AWS Identity Center**: Habilitar MFA en la cuenta (especialmente en la raíz) y, de ser posible, utilizar AWS IAM Identity Center para gestionar usuarios y roles temporales. (Alternativamente, se podría usar un usuario IAM convencional con MFA para simplificar, aunque la arquitectura óptima utiliza Identity Center para evitar usuarios IAM estáticos.) Es necesario contar con una aplicación de autenticación MFA (como Google Authenticator, Authy, etc.) para las pruebas de inicio de sesión con MFA.
 
-## 🔐 Fase 1 – Configuración de Seguridad de Identidad (IAM)
+- **Conocimientos básicos de AWS**: Familiaridad con la consola de AWS y los servicios mencionados. La implementación se puede realizar íntegramente a través de la consola web y AWS CloudShell/CLI siguiendo las fases descritas. No se requieren herramientas de pago ni suscripciones adicionales.
 
-Se establecen identidades seguras mediante **AWS IAM** y **IAM Identity Center**.  
-- **Autenticación Multifactor (MFA)** obligatoria para usuarios privilegiados.  
-- **Roles IAM** con privilegios mínimos (principio PoLP).  
-- Generación de **credential reports**, políticas y roles documentados en `/Evidence/`.  
+- **Límites del Free Tier**: Todos los recursos se eligieron para permanecer dentro de las franquicias gratuitas (instancias t3.micro de EC2/RDS, 20 GB de almacenamiento, cierto volumen de logs, etc.). Aun así, se debe monitorear el uso para no exceder los límites mensuales del Free Tier y evitar costos inesperados.
 
-**Servicios:** IAM Users / Roles / Policies / MFA  
-**Componentes ZT:** PAP (Policy Administration Point)
 
----
+**Inspiración**: Proyecto desarrollado como iniciativa personal, siguiendo las recomendaciones del marco NIST SP 800-207 (Zero Trust Architecture) y las mejores prácticas de seguridad en la nube de AWS y el Curso Designing & Deploying a Zero Trust Architecture de EC-Council.
 
-## 🧠 Fase 2 – Identidad y Control de Acceso (IAM)
 
-Integración con **IAM Identity Center** como fuente de identidad central (PDP).  
-- Autenticación y autorización continua.  
-- Evaluación de políticas contextuales (región, dispositivo, IP).  
-- Uso de **Session Manager** para acceso sin SSH a instancias.  
-
-**Servicios:** IAM Identity Center, SSM Session Manager  
-**ZT Rol:** PDP (Policy Decision Point)
-
----
-
-## 🗄️ Fase 3 – Protección de Datos (S3 + SSE-S3)
-
-Aplicación de controles de confidencialidad y disponibilidad de datos.  
-- Buckets S3 con **SSE-S3 (Server-Side Encryption)**.  
-- **Versioning habilitado** para protección ante borrados accidentales.  
-- **Bloqueo de acceso público** en S3.  
-
-**Servicios:** S3, SSE-S3, IAM Policies  
-**ZT Rol:** PAP (administra políticas de cifrado y acceso)
-
----
-
-## 🌐 Fase 4 – Segmentación de Red (VPC y Security Groups)
-
-Diseño de una **VPC segmentada** en subredes públicas y privadas.  
-- **Subred pública:** EC2 Bastion (PEP) con acceso por Session Manager.  
-- **Subred privada:** RDS Multi-AZ (cifrado y aislado).  
-- Tablas de rutas separadas (pública/privada).  
-- Security Groups que permiten únicamente el tráfico necesario (3306/5432 desde Bastion).
-
-**Servicios:** VPC, EC2, Security Groups, NACLs  
-**ZT Rol:** PEP (Policy Enforcement Point)
-
----
-
-## 🧩 Fase 5 – Base de Datos RDS Privada + KMS + IAM bajo Zero Trust
-
-Implementación de Amazon RDS MySQL Multi-AZ con cifrado KMS.  
-- RDS solo accesible desde Bastion (Zero Trust en capa de red).  
-- KMS gestiona claves de cifrado para RDS.  
-- Políticas IAM asocian roles de EC2 y RDS.  
-- Monitoreo de consultas y logs en CloudWatch.
-
-**Servicios:** RDS Multi-AZ, KMS, IAM, Security Groups  
-**ZT Rol:** PAP + PEP combinados en la capa de datos.
-
----
-
-## 📡 Fase 6 – Monitoreo Continuo (CloudWatch + CloudTrail + SNS)
-
-Monitoreo basado en eventos y alertas de seguridad.  
-- **CloudTrail** registra todos los eventos de API.  
-- **CloudWatch Metric Filter** detecta intentos de inicio fallido.  
-- **SNS Topic security-alerts** envía notificaciones por correo.  
-
-**Ejemplo de Filtro CloudWatch (JSON):**
-```json
-{ "$.eventName": "ConsoleLogin", "$.errorMessage": "Failed authentication" }
