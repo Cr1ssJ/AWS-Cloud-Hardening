@@ -1,0 +1,11 @@
+{
+  "FilterName": "FailedConsoleLogins",
+  "FilterPattern": "{ ($.eventName = \"ConsoleLogin\") && ($.errorMessage = \"Failed authentication\") }",
+  "MetricTransformations": [
+    {
+      "MetricName": "FailedConsoleLogins",
+      "MetricNamespace": "SecurityMetrics",
+      "MetricValue": "1"
+    }
+  ]
+}
