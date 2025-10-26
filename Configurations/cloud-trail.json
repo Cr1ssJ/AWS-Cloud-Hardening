@@ -1,0 +1,16 @@
+{
+  "Name": "ZT-CloudTrail",
+  "IsMultiRegionTrail": true,
+  "IncludeGlobalServiceEvents": true,
+  "S3BucketName": "zt-cloudtrail-logs",
+  "IsOrganizationTrail": false,
+  "CloudWatchLogsLogGroupArn": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/cloudtrail/zt-cloudtrail:*",
+  "CloudWatchLogsRoleArn": "arn:aws:iam::123456789012:role/CloudTrail_CloudWatchLogs_Role",
+  "EventSelectors": [
+    {
+      "ReadWriteType": "All",
+      "IncludeManagementEvents": true,
+      "DataResources": []
+    }
+  ]
+}
