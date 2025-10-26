@@ -1,108 +1,105 @@
 # 🛡️ AWS Cloud Hardening – Zero Trust Architecture
 
 **Autor:** Cristian Jiménez  
-**Carrera:** Estudiante de la Licenciatura en Ciberseguridad – Universidad Tecnológica de Panamá  
+**Institución:** Estudiante de la Licenciatura en Ciberseguridad en la Universidad Tecnológica de Panamá (UTP)  
+**Proyecto:** Implementación de arquitectura Zero Trust en AWS  
 **Fecha:** Octubre 2025  
 
 ---
 
-## 🎯 Objetivo General
-Diseñar y desplegar un entorno AWS seguro basado en los principios de Zero Trust Architecture (ZTA), conforme a las recomendaciones de NIST SP 800-207, aplicando buenas prácticas de endurecimiento de infraestructura, monitoreo continuo y respuesta ante incidentes.
+## 📘 Resumen General
+
+Este proyecto implementa los principios de **Zero Trust Architecture (ZTA)** en un entorno AWS, siguiendo las recomendaciones del **NIST SP 800-207** y las mejores prácticas de seguridad en la nube.  
+El objetivo es reforzar la **seguridad por capas**, **minimizar la confianza implícita**, y **proteger datos, identidades y redes** bajo un modelo de autenticación y autorización continua.
 
 ---
 
-## 🧩 Fases del Proyecto
+## 🧩 Fase 0 – Fundamentos de Zero Trust
 
-### 🧱 **Fase 1 – Configuración de Identidad (IAM + MFA + Identity Center)**
-- Creación de usuarios, grupos y roles IAM.
-- Habilitación de MFA en cuentas privilegiadas.
-- Configuración de políticas `iam-policy-sample.json`.
-- Integración con AWS Identity Center.
+> _“Zero Trust no es un producto, es una filosofía de seguridad.”_ – John Kindervag  
 
-📁 **Evidencias:**
-`iam-credential-report.csv`, `iam-users.json`, `iam-policies.json`, `iam-roles.json`, `identity-center-user.png`, `mfa-setup.png`, `mfa-setup-completed.png`.
+Zero Trust se basa en tres principios:
+- **Nunca confiar, siempre verificar.**  
+- **Aplicar privilegio mínimo.**  
+- **Monitorear y validar continuamente.**
 
----
-
-### ☁️ **Fase 2 – Almacenamiento Seguro (S3 Hardening)**
-- Creación del bucket `zt-cloudtrail-logs`.
-- Configuración de versioning, encryption (AES-256) y bucket policy restrictiva.
-- Pruebas de acceso y validación de políticas.
-
-📁 **Configuraciones:**
-`s3-policy.json`, `s3-encryption.json`, `s3-versioning.json`.
-
-📁 **Evidencias:**
-`permissions.png`, capturas de políticas aplicadas.
+**Conceptos Clave:**
+- La red siempre se considera hostil.  
+- No existe confianza implícita (interna o externa).  
+- Toda solicitud pasa por un **PDP (Policy Decision Point)** y un **PEP (Policy Enforcement Point)**.  
+- Las decisiones de acceso se basan en identidad, dispositivo, comportamiento y contexto.  
 
 ---
 
-### 🖥️ **Fase 3 – Infraestructura Segura (VPC + EC2 + RDS)**
-- Creación de VPC `ZT-VPC`.
-- Subnets pública y privada con tablas de ruteo personalizadas.
-- Despliegue de EC2 (Amazon Linux 2023) y RDS (MySQL).
-- Asociación de roles SSM (AmazonSSMManagedInstanceCore) para control sin SSH.
-- Pruebas de conexión y registro de logs.
+## 🔐 Fase 1 – Configuración de Seguridad de Identidad (IAM)
 
-📁 **Evidencias:**
-Capturas de `Route Tables`, `Subnets`, `RDS instance`, `Session Manager`, `diagram-phase3.png`.
+Se establecen identidades seguras mediante **AWS IAM** y **IAM Identity Center**.  
+- **Autenticación Multifactor (MFA)** obligatoria para usuarios privilegiados.  
+- **Roles IAM** con privilegios mínimos (principio PoLP).  
+- Generación de **credential reports**, políticas y roles documentados en `/Evidence/`.  
 
----
-
-### 🧠 **Fase 4 – Gestión de Logs (CloudWatch + RDS Integration)**
-- Exportación de logs RDS a CloudWatch.
-- Creación de log groups `/aws/rds/zt-db-instance/error`.
-- Validación de métricas y retención.
-
-📁 **Evidencias:**
-Capturas de `Log groups`, `RDS Logs`, `CloudWatch configuration`.
+**Servicios:** IAM Users / Roles / Policies / MFA  
+**Componentes ZT:** PAP (Policy Administration Point)
 
 ---
 
-### 🔍 **Fase 5 – Monitoreo Continuo (CloudTrail + CloudWatch + SNS)**
-- Activación de CloudTrail para toda la cuenta.
-- Envío de logs a S3 (zt-cloudtrail-logs).
-- Creación de metric filter para detectar intentos de inicio fallido { ($.eventName = "ConsoleLogin") && ($.errorMessage = "Failed authentication") }
-- Configuración de alarma Security Alert vinculada a SNS Topic (security-alerts).
-- Prueba de simulación con credenciales erróneas.
+## 🧠 Fase 2 – Identidad y Control de Acceso (IAM)
 
-### 📁 Evidencias
-Capturas sugeridas:
-- `Security Alert (OK / ALARM)` → `security-alert.png`
-- `Notificación por correo (SNS)` → `sns-notification.png`
+Integración con **IAM Identity Center** como fuente de identidad central (PDP).  
+- Autenticación y autorización continua.  
+- Evaluación de políticas contextuales (región, dispositivo, IP).  
+- Uso de **Session Manager** para acceso sin SSH a instancias.  
+
+**Servicios:** IAM Identity Center, SSM Session Manager  
+**ZT Rol:** PDP (Policy Decision Point)
 
 ---
 
-## 🔐 Fase 6 – Integración Zero Trust (PAP, PDP, PEP, PIP)
+## 🗄️ Fase 3 – Protección de Datos (S3 + SSE-S3)
 
-### 🎯 Objetivo
-Alinear la arquitectura a NIST SP 800-207, mapeando servicios AWS a los componentes del modelo Zero Trust.
+Aplicación de controles de confidencialidad y disponibilidad de datos.  
+- Buckets S3 con **SSE-S3 (Server-Side Encryption)**.  
+- **Versioning habilitado** para protección ante borrados accidentales.  
+- **Bloqueo de acceso público** en S3.  
 
-| Componente | AWS Servicio              | Función                                   |
-|------------|---------------------------|-------------------------------------------|
-| **PAP**    | IAM, S3 Policy, KMS       | Administra políticas y cifrado            |
-| **PDP**    | IAM, CloudWatch           | Evalúa decisiones de acceso               |
-| **PEP**    | EC2 Bastion, SG, NACL     | Aplica políticas y bloqueos               |
-| **PIP**    | CloudTrail, CloudWatch Logs | Provee contexto (IP, región, tiempo)    |
-| **Feedback** | SNS, IAM                | Ajusta políticas adaptativamente          |
-
-**Evidencias (Fase 6):**
-- Diagrama Zero Trust final → `zero-trust-diagram.png`
-- Documento teórico / explicación de integración → `docs/zero-trust-notes.md` (opcional)
+**Servicios:** S3, SSE-S3, IAM Policies  
+**ZT Rol:** PAP (administra políticas de cifrado y acceso)
 
 ---
 
-## 🧾 Fase 7 – Evidencias y Reporte Final
+## 🌐 Fase 4 – Segmentación de Red (VPC y Security Groups)
 
-### 🎯 Objetivo
-Consolidar evidencias técnicas y elaborar la documentación final del proyecto.
+Diseño de una **VPC segmentada** en subredes públicas y privadas.  
+- **Subred pública:** EC2 Bastion (PEP) con acceso por Session Manager.  
+- **Subred privada:** RDS Multi-AZ (cifrado y aislado).  
+- Tablas de rutas separadas (pública/privada).  
+- Security Groups que permiten únicamente el tráfico necesario (3306/5432 desde Bastion).
 
-**Exportación de logs y artefactos:**
-- `cloudtrail-events.json` (Event history o consulta)
-- `cloudwatch-alarms.json` (estado/config de alarmas)
-- `sns-alert.png` (captura del correo recibido)
-- `iam-credential-report.csv` (ya incluido)
-- Diagramas finales (`architecture-final.png`, `zero-trust-diagram.png`)
+**Servicios:** VPC, EC2, Security Groups, NACLs  
+**ZT Rol:** PEP (Policy Enforcement Point)
 
+---
 
-  
+## 🧩 Fase 5 – Base de Datos RDS Privada + KMS + IAM bajo Zero Trust
+
+Implementación de Amazon RDS MySQL Multi-AZ con cifrado KMS.  
+- RDS solo accesible desde Bastion (Zero Trust en capa de red).  
+- KMS gestiona claves de cifrado para RDS.  
+- Políticas IAM asocian roles de EC2 y RDS.  
+- Monitoreo de consultas y logs en CloudWatch.
+
+**Servicios:** RDS Multi-AZ, KMS, IAM, Security Groups  
+**ZT Rol:** PAP + PEP combinados en la capa de datos.
+
+---
+
+## 📡 Fase 6 – Monitoreo Continuo (CloudWatch + CloudTrail + SNS)
+
+Monitoreo basado en eventos y alertas de seguridad.  
+- **CloudTrail** registra todos los eventos de API.  
+- **CloudWatch Metric Filter** detecta intentos de inicio fallido.  
+- **SNS Topic security-alerts** envía notificaciones por correo.  
+
+**Ejemplo de Filtro CloudWatch (JSON):**
+```json
+{ "$.eventName": "ConsoleLogin", "$.errorMessage": "Failed authentication" }
